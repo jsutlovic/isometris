@@ -14,7 +14,7 @@ define([
     var scene = new THREE.Scene();
     this.scene = scene;
 
-    var aspect = this.get_aspect();
+    var aspect = this.getAspect();
     this.aspect = aspect;
     var zoom = 12;
     this.zoom = zoom;
@@ -22,7 +22,7 @@ define([
     // var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     var camera = new THREE.OrthographicCamera();
     this.camera = camera;
-    this.set_camera(camera, aspect, zoom);
+    this.setCamera(camera, aspect, zoom);
     camera.lookAt(scene.position);
 
     var renderer = new THREE.WebGLRenderer();
@@ -44,7 +44,7 @@ define([
     scene.add(ambient);
   };
 
-  GameView.prototype.set_camera = function set_camera(camera, aspect, zoom) {
+  GameView.prototype.setCamera = function setCamera(camera, aspect, zoom) {
     camera.left = -zoom * aspect;
     camera.right = zoom * aspect;
     camera.top = zoom;
@@ -55,11 +55,11 @@ define([
     camera.position.set(-zoom, zoom / 2, zoom);
   };
 
-  GameView.prototype.get_aspect = function get_aspect() {
+  GameView.prototype.getAspect = function getAspect() {
     return window.innerWidth / window.innerHeight;
   };
 
-  GameView.prototype.render_into = function render_into(el) {
+  GameView.prototype.renderInto = function renderInto(el) {
     if (this.dom_rendered) return;
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     el.appendChild(this.renderer.domElement);
@@ -71,8 +71,8 @@ define([
   };
 
   GameView.prototype.resize = function resize() {
-    this.aspect = this.get_aspect();
-    this.set_camera(this.camera, this.aspect, this.zoom);
+    this.aspect = this.getAspect();
+    this.setCamera(this.camera, this.aspect, this.zoom);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.render();
   };

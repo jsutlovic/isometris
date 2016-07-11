@@ -11,7 +11,7 @@ define([
 
   Game.prototype.init = function init() {
     this.view.init();
-    this.view.render_into(document.getElementById('game'));
+    this.view.renderInto(document.getElementById('game'));
     this.render();
     return;
   };
