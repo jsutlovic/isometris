@@ -23,5 +23,5 @@ require.config({
 
 require(['three', 'jquery', 'game'], function(THREE, $, Game) {
   var game = new Game();
-  $(document).ready(game.init.bind(game));
+  $(document).ready(game.render.bind(game));
 });

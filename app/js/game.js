@@ -2,22 +2,23 @@
 define([
   'three',
   'views/game_view',
-], function(THREE, GameView) {
+  'models/game_model',
+], function(THREE, GameView, GameModel) {
   'use strict';
 
   var Game = function Game() {
-    this.view = new GameView();
+    this.init();
   };
 
   Game.prototype.init = function init() {
-    this.view.init();
-    this.view.renderInto(document.getElementById('game'));
-    this.render();
-    return;
+    this.view = new GameView();
+    this.model = new GameModel();
   };
 
   Game.prototype.render = function render() {
+    this.view.renderInto(document.getElementById('game'));
     this.view.render();
+    this.view.renderModel(this.model);
   };
 
   return Game;

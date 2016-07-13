@@ -5,9 +5,12 @@ define([
   'use strict';
 
   var GameView = function GameView() {
-    this.dom_rendered = false;
+    this.domRendered = false;
+    this.pieceSpacing = new THREE.Vector3(1.2, 1.1, 1.2);
 
     window.addEventListener("resize", this.resize.bind(this), false);
+
+    this.init();
   };
 
   GameView.prototype.init = function init() {
@@ -29,7 +32,22 @@ define([
     renderer.setClearColor(0xc8c8c8);
     this.renderer = renderer;
 
-    var axes = new THREE.AxisHelper(zoom);
+    this.setupScene(scene);
+  };
+
+  GameView.prototype.setCamera = function setCamera(camera, aspect, zoom) {
+    camera.left = -zoom * aspect;
+    camera.right = zoom * aspect;
+    camera.bottom = -6;
+    camera.top = (zoom * 2) + camera.bottom;
+    camera.near = 1;
+    camera.far = 1000;
+    camera.position.set(-zoom, zoom / 2, zoom);
+    camera.updateProjectionMatrix();
+  };
+
+  GameView.prototype.setupScene = function setupScene(scene) {
+    var axes = new THREE.AxisHelper(this.zoom);
     scene.add(axes);
 
     var bottomPlane = new THREE.Mesh(
@@ -40,19 +58,18 @@ define([
 
     scene.add(bottomPlane);
 
-    var ambient = new THREE.AmbientLight("#ffffff");
+    var ambient = new THREE.AmbientLight("#ffffff", 0.8);
     scene.add(ambient);
+
+    var spotlight = new THREE.SpotLight("#ffffff", 2);
+    spotlight.position.set(0, 100, 30);
+    spotlight.castShadow = true;
+    scene.add(spotlight);
   };
 
-  GameView.prototype.setCamera = function setCamera(camera, aspect, zoom) {
-    camera.left = -zoom * aspect;
-    camera.right = zoom * aspect;
-    camera.top = zoom;
-    camera.bottom = -zoom;
-    camera.near = 1;
-    camera.far = 1000;
-    camera.updateProjectionMatrix();
-    camera.position.set(-zoom, zoom / 2, zoom);
+  GameView.prototype.clearScene = function clearScene(scene) {
+    scene.remove.apply(scene, scene.children);
+    this.render();
   };
 
   GameView.prototype.getAspect = function getAspect() {
@@ -60,14 +77,49 @@ define([
   };
 
   GameView.prototype.renderInto = function renderInto(el) {
-    if (this.dom_rendered) return;
+    if (this.domRendered) return;
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     el.appendChild(this.renderer.domElement);
-    this.dom_rendered = true;
+    this.domRendered = true;
   };
 
   GameView.prototype.render = function render() {
     this.renderer.render(this.scene, this.camera);
+  };
+
+  GameView.prototype.renderModel = function renderModel(model) {
+    var scene = this.scene;
+    this.clearScene(scene);
+    this.setupScene(scene);
+
+    var rotVec = new THREE.Vector3(0, 0, 1);
+
+    for (var i=0; i < model.inactivePieces.length; i++) {
+      var piece = model.inactivePieces[i];
+      var pieceMaterial = new THREE.MeshLambertMaterial({color: piece.color});
+
+      for (var j = 0; j < piece.subPieces.length; j++) {
+        var subpiece = piece.subPieces[j];
+
+        var angle = - (Math.PI / 2) * piece.rotation;
+        var sub_rot = subpiece.clone();
+        sub_rot.applyAxisAngle(rotVec, angle);
+
+        var vec = model.baseVec.clone();
+        vec.add(piece.vec);
+        vec.add(sub_rot);
+        vec.multiply(this.pieceSpacing);
+
+        var cube = new THREE.Mesh(
+          new THREE.BoxGeometry(1, 1, 1),
+          pieceMaterial
+        );
+        cube.position.copy(vec);
+        scene.add(cube);
+      }
+    }
+
+    this.render();
   };
 
   GameView.prototype.resize = function resize() {
