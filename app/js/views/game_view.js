@@ -5,15 +5,15 @@ define([
   'use strict';
 
   var GameView = function GameView() {
+    this.init();
+  };
+
+  GameView.prototype.init = function init() {
     this.domRendered = false;
     this.pieceSpacing = new THREE.Vector3(1.2, 1.1, 1.2);
 
     window.addEventListener("resize", this.resize.bind(this), false);
 
-    this.init();
-  };
-
-  GameView.prototype.init = function init() {
     var scene = new THREE.Scene();
     this.scene = scene;
 
