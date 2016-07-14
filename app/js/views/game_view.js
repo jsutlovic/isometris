@@ -92,22 +92,16 @@ define([
     this.clearScene(scene);
     this.setupScene(scene);
 
-    var rotVec = new THREE.Vector3(0, 0, 1);
-
     for (var i=0; i < model.inactivePieces.length; i++) {
       var piece = model.inactivePieces[i];
       var pieceMaterial = new THREE.MeshLambertMaterial({color: piece.color});
 
       for (var j = 0; j < piece.subPieces.length; j++) {
-        var subpiece = piece.subPieces[j];
-
-        var angle = - (Math.PI / 2) * piece.rotation;
-        var sub_rot = subpiece.clone();
-        sub_rot.applyAxisAngle(rotVec, angle);
+        var subPiece = piece.subPieces[j];
 
         var vec = model.baseVec.clone();
         vec.add(piece.vec);
-        vec.add(sub_rot);
+        vec.add(subPiece);
         vec.multiply(this.pieceSpacing);
 
         var cube = new THREE.Mesh(

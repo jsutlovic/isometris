@@ -16,7 +16,9 @@ define([
 
     this.inactivePieces.push(new GamePiece());
     this.inactivePieces.push(new GamePiece({ x: 1, y: 2, color: 0x228811 }));
-    this.inactivePieces.push(new GamePiece({ x: 0, y: 4, rotation: 1, color: 0x222288 }));
+
+    this.currentPiece = new GamePiece({ x: 0, y: 7, rotation: 0, color: 0x222288 });
+    this.inactivePieces.push(this.currentPiece);
   };
 
   return GameModel;

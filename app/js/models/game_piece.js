@@ -5,9 +5,9 @@ define([
 ], function(THREE, _) {
   'use strict';
 
-  var GamePiece = function GamePiece(options) {
-    this.subPieces = [];
+  var rotVec = new THREE.Vector3(0, 0, 1);
 
+  var GamePiece = function GamePiece(options) {
     this.init(options);
   };
 
@@ -20,6 +20,7 @@ define([
       rotation: 0,
     });
 
+    this.subPieces = [];
     this.vec = new THREE.Vector3(opts.x, opts.y, opts.z);
     this.color = opts.color;
     this.rotation = opts.rotation;
@@ -30,9 +31,16 @@ define([
       new THREE.Vector3(1, 0),
       new THREE.Vector3(-1, 0)
     );
+
+    this.rotate(this.rotation);
   };
 
-  GamePiece.prototype.freeze = function freeze() {
+  GamePiece.prototype.rotate = function rotate(direction) {
+    for (var i = 0; i < this.subPieces.length; i++) {
+      var subPiece = this.subPieces[i];
+      var angle = - (Math.PI / 2) * direction;
+      subPiece.applyAxisAngle(rotVec, angle);
+    }
   };
 
   return GamePiece;
