@@ -12,9 +12,11 @@ require.config({
     },
     three: {
       exports: 'THREE'
-    }
+    },
+    mousetrap: { exports: 'Mousetrap' },
   },
   paths: {
+    mousetrap: '../vendor/js/mousetrap',
     underscore: '../vendor/js/underscore',
     jquery: '../vendor/js/zepto',
     three: '../vendor/js/three',
