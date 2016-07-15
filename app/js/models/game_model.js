@@ -1,8 +1,8 @@
 /* global require */
 define([
   'three',
-  'models/game_piece',
-], function(THREE, GamePiece) {
+  'models/tetromino',
+], function(THREE, Tetromino) {
   'use strict';
 
   var GameModel = function GameModel() {
@@ -10,15 +10,15 @@ define([
   };
 
   GameModel.prototype.init = function init() {
-    this.inactivePieces = [];
-    this.activePiece = null;
+    this.inactive = [];
     this.baseVec = new THREE.Vector3(0, 1, 0);
 
-    this.inactivePieces.push(new GamePiece());
-    this.inactivePieces.push(new GamePiece({ x: 1, y: 2, color: 0x228811 }));
+    this.inactive.push(new Tetromino());
+    this.inactive.push(new Tetromino({ x: 1, y: 2, color: 0x228811 }));
 
-    this.currentPiece = new GamePiece({ x: 0, y: 7, rotation: 0, color: 0x222288 });
-    this.inactivePieces.push(this.currentPiece);
+    this.activePiece = null;
+    this.activePiece = new Tetromino({ x: 0, y: 7, rotation: 0, color: 0x222288 });
+    this.inactive.push(this.activePiece);
   };
 
   return GameModel;

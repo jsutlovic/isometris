@@ -92,8 +92,8 @@ define([
     this.clearScene(scene);
     this.setupScene(scene);
 
-    for (var i=0; i < model.inactivePieces.length; i++) {
-      var piece = model.inactivePieces[i];
+    for (var i=0; i < model.inactive.length; i++) {
+      var piece = model.inactive[i];
       var pieceMaterial = new THREE.MeshLambertMaterial({color: piece.color});
 
       for (var j = 0; j < piece.subPieces.length; j++) {

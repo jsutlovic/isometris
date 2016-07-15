@@ -13,11 +13,22 @@ define([
   Game.prototype.init = function init() {
     this.view = new GameView();
     this.model = new GameModel();
+    this.animating = true;
   };
 
   Game.prototype.render = function render() {
+    var view = this.view;
+    var self = this;
+    (function animate() {
+      window.setTimeout(function() {
+        if (!self.animating) return;
+
+        window.requestAnimationFrame(animate);
+        view.render();
+      }, 1000 / 2);
+    })();
+
     this.view.renderInto(document.getElementById('game'));
-    this.view.render();
     this.view.renderModel(this.model);
   };
 

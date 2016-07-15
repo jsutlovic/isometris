@@ -7,11 +7,11 @@ define([
 
   var rotVec = new THREE.Vector3(0, 0, 1);
 
-  var GamePiece = function GamePiece(options) {
+  var Tetromino = function Tetromino(options) {
     this.init(options);
   };
 
-  GamePiece.prototype.init = function init(options) {
+  Tetromino.prototype.init = function init(options) {
     var opts = _.defaults(options || {}, {
       x: 0,
       y: 0,
@@ -25,24 +25,39 @@ define([
     this.color = opts.color;
     this.rotation = opts.rotation;
 
+    this.rotationCenter = new THREE.Vector3();
     this.subPieces.push(
-      new THREE.Vector3(0, 0),
+      new THREE.Vector3(-1, 1),
       new THREE.Vector3(0, 1),
-      new THREE.Vector3(1, 0),
-      new THREE.Vector3(-1, 0)
+      new THREE.Vector3(0, 0),
+      new THREE.Vector3(1, 0)
     );
+
+    // this.rotationCenter = new THREE.Vector3(-0.5, -0.5, 0);
+
+    // this.subPieces.push(
+    //   new THREE.Vector3(2, 0),
+    //   new THREE.Vector3(1, 0),
+    //   new THREE.Vector3(0, 0),
+    //   new THREE.Vector3(-1, 0)
+    // );
 
     this.rotate(this.rotation);
   };
 
-  GamePiece.prototype.rotate = function rotate(direction) {
+  Tetromino.prototype.rotate = function rotate(direction) {
+    this.rotation = (this.rotation + direction) & 3;
+
     for (var i = 0; i < this.subPieces.length; i++) {
       var subPiece = this.subPieces[i];
       var angle = - (Math.PI / 2) * direction;
+
+      subPiece.add(this.rotationCenter);
       subPiece.applyAxisAngle(rotVec, angle);
+      subPiece.sub(this.rotationCenter);
     }
   };
 
-  return GamePiece;
+  return Tetromino;
 });
 
