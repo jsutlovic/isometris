@@ -96,12 +96,12 @@ define([
       var piece = model.inactive[i];
       var pieceMaterial = new THREE.MeshLambertMaterial({color: piece.color});
 
-      for (var j = 0; j < piece.subPieces.length; j++) {
-        var subPiece = piece.subPieces[j];
+      for (var j = 0; j < piece.blocks.length; j++) {
+        var block = piece.blocks[j];
 
         var vec = model.baseVec.clone();
         vec.add(piece.vec);
-        vec.add(subPiece);
+        vec.add(block);
         vec.multiply(this.pieceSpacing);
 
         var cube = new THREE.Mesh(

@@ -7,11 +7,90 @@ define([
 
   var rotVec = new THREE.Vector3(0, 0, 1);
 
-  var Tetromino = function Tetromino(options) {
-    this.init(options);
+  var tetromino_data = {
+    "I": {
+      color: 0x228888,
+      center: new THREE.Vector3(-0.5, -0.5),
+      blocks: [
+        new THREE.Vector3(-1, 0),
+        new THREE.Vector3(0, 0),
+        new THREE.Vector3(1, 0),
+        new THREE.Vector3(2, 0),
+      ],
+    },
+    "O": {
+      color: 0x888822,
+      center: new THREE.Vector3(-0.5, -0.5),
+      blocks: [
+        new THREE.Vector3(0, 1),
+        new THREE.Vector3(1, 1),
+        new THREE.Vector3(0, 0),
+        new THREE.Vector3(1, 0),
+      ],
+    },
+    "T": {
+      color: 0x882288,
+      center: new THREE.Vector3(),
+      blocks: [
+        new THREE.Vector3(0, 1),
+        new THREE.Vector3(-1, 0),
+        new THREE.Vector3(0, 0),
+        new THREE.Vector3(1, 0),
+      ],
+    },
+    "S": {
+      color: 0x228822,
+      center: new THREE.Vector3(),
+      blocks: [
+        new THREE.Vector3(0, 1),
+        new THREE.Vector3(-1, 0),
+        new THREE.Vector3(0, 0),
+        new THREE.Vector3(1, 1),
+      ],
+    },
+    "Z": {
+      color: 0x882222,
+      center: new THREE.Vector3(),
+      blocks: [
+        new THREE.Vector3(0, 1),
+        new THREE.Vector3(-1, 1),
+        new THREE.Vector3(0, 0),
+        new THREE.Vector3(1, 0),
+      ],
+    },
+    "J": {
+      color: 0x222288,
+      center: new THREE.Vector3(),
+      blocks: [
+        new THREE.Vector3(-1, 1),
+        new THREE.Vector3(-1, 0),
+        new THREE.Vector3(0, 0),
+        new THREE.Vector3(1, 0),
+      ],
+    },
+    "L": {
+      color: 0x884422,
+      center: new THREE.Vector3(),
+      blocks: [
+        new THREE.Vector3(1, 1),
+        new THREE.Vector3(-1, 0),
+        new THREE.Vector3(0, 0),
+        new THREE.Vector3(1, 0),
+      ],
+    }
+  };
+  var tetrominos = Object.keys(tetromino_data);
+
+  var Tetromino = function Tetromino(type, options) {
+    this.init(type, options);
   };
 
-  Tetromino.prototype.init = function init(options) {
+  Tetromino.prototype.init = function init(type, options) {
+    if (type === null || type === undefined) {
+      console.log("Error intializing Tetromino, no type given!");
+      return;
+    }
+
     var opts = _.defaults(options || {}, {
       x: 0,
       y: 0,
@@ -20,27 +99,17 @@ define([
       rotation: 0,
     });
 
-    this.subPieces = [];
+    this.blocks = [];
     this.vec = new THREE.Vector3(opts.x, opts.y, opts.z);
     this.color = opts.color;
     this.rotation = opts.rotation;
 
-    this.rotationCenter = new THREE.Vector3();
-    this.subPieces.push(
-      new THREE.Vector3(-1, 1),
-      new THREE.Vector3(0, 1),
-      new THREE.Vector3(0, 0),
-      new THREE.Vector3(1, 0)
-    );
-
-    // this.rotationCenter = new THREE.Vector3(-0.5, -0.5, 0);
-
-    // this.subPieces.push(
-    //   new THREE.Vector3(2, 0),
-    //   new THREE.Vector3(1, 0),
-    //   new THREE.Vector3(0, 0),
-    //   new THREE.Vector3(-1, 0)
-    // );
+    this.color = tetromino_data[type].color;
+    this.rotationCenter = tetromino_data[type].center.clone();
+    tetromino_data[type].blocks.forEach(function(block) {
+      console.log(block);
+      this.blocks.push(block.clone());
+    }.bind(this));
 
     this.rotate(this.rotation);
   };
@@ -48,13 +117,13 @@ define([
   Tetromino.prototype.rotate = function rotate(direction) {
     this.rotation = (this.rotation + direction) & 3;
 
-    for (var i = 0; i < this.subPieces.length; i++) {
-      var subPiece = this.subPieces[i];
+    for (var i = 0; i < this.blocks.length; i++) {
+      var block = this.blocks[i];
       var angle = - (Math.PI / 2) * direction;
 
-      subPiece.add(this.rotationCenter);
-      subPiece.applyAxisAngle(rotVec, angle);
-      subPiece.sub(this.rotationCenter);
+      block.add(this.rotationCenter);
+      block.applyAxisAngle(rotVec, angle);
+      block.sub(this.rotationCenter);
     }
   };
 
