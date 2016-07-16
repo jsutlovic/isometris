@@ -12,10 +12,10 @@ define([
       color: 0x228888,
       center: new THREE.Vector3(-0.5, -0.5),
       blocks: [
-        new THREE.Vector3(-1, 0),
-        new THREE.Vector3(0, 0),
-        new THREE.Vector3(1, 0),
-        new THREE.Vector3(2, 0),
+        new THREE.Vector3(-1, 1),
+        new THREE.Vector3(0, 1),
+        new THREE.Vector3(1, 1),
+        new THREE.Vector3(2, 1),
       ],
     },
     "O": {
@@ -85,6 +85,10 @@ define([
     this.init(type, options);
   };
 
+  Object.keys(tetromino_data).forEach(function(key) {
+    Tetromino[key] = _.partial(Tetromino, key);
+  });
+
   Tetromino.prototype.init = function init(type, options) {
     if (type === null || type === undefined) {
       console.log("Error intializing Tetromino, no type given!");
@@ -107,7 +111,6 @@ define([
     this.color = tetromino_data[type].color;
     this.rotationCenter = tetromino_data[type].center.clone();
     tetromino_data[type].blocks.forEach(function(block) {
-      console.log(block);
       this.blocks.push(block.clone());
     }.bind(this));
 

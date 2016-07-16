@@ -19,10 +19,9 @@ define([
 
     var aspect = this.getAspect();
     this.aspect = aspect;
-    var zoom = 12;
+    var zoom = 14;
     this.zoom = zoom;
 
-    // var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     var camera = new THREE.OrthographicCamera();
     this.camera = camera;
     this.setCamera(camera, aspect, zoom);
