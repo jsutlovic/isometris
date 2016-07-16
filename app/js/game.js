@@ -56,6 +56,13 @@ define([
       this.model.activePiece.vec.x += 1;
       this.view.renderModel(this.model);
     }.bind(this));
+
+    Mousetrap.bind(["i"], function() {
+      this.view.isometric = !this.view.isometric;
+      console.log("isometric: " + this.view.isometric);
+      this.view.setCamera();
+      this.view.renderModel(this.model);
+    }.bind(this));
   };
 
   Game.prototype.render = function render() {
