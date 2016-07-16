@@ -10,7 +10,7 @@ define([
 
   GameView.prototype.init = function init() {
     this.domRendered = false;
-    this.isometric = false;
+    this.isometric = true;
     this.clearColor = 0x000000;
     this.pieceSpacing = new THREE.Vector3(1.1, 1.1, 1.1);
 
@@ -55,7 +55,7 @@ define([
 
   GameView.prototype.setupScene = function setupScene(scene, model) {
     var axes = new THREE.AxisHelper(this.zoom);
-    scene.add(axes);
+    // scene.add(axes);
 
     var bottomPlane = new THREE.Mesh(
       new THREE.BoxGeometry(12, 6, 0.1),
@@ -65,6 +65,30 @@ define([
     bottomPlane.rotation.x = -0.5 * Math.PI;
 
     scene.add(bottomPlane);
+
+    var unitGeom = new THREE.BoxGeometry(1, 1, 1);
+    var unitMat = new THREE.MeshBasicMaterial({
+      color: 0xdddddd,
+      transparent: true,
+      opacity: 0.125,
+    });
+
+    // var vecOffset = new THREE.Vector3(model.width / -2, -0.5);
+    var vecOffset = new THREE.Vector3(0, 0);
+
+    for (var y = 0; y < model.height; y++) {
+      for (var x = 0; x < model.width; x++) {
+        var unitMesh = new THREE.Mesh(unitGeom, unitMat);
+
+        var vec = model.baseVec.clone();
+        vec.add(new THREE.Vector3(x, y));
+        vec.add(vecOffset);
+        vec.multiply(this.pieceSpacing);
+        unitMesh.position.copy(vec);
+
+        scene.add(unitMesh);
+      }
+    }
 
     var ambient = new THREE.AmbientLight("#ffffff", 0.8);
     scene.add(ambient);
