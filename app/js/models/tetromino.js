@@ -10,12 +10,12 @@ define([
   var tetromino_data = {
     "I": {
       color: 0x228888,
-      center: new THREE.Vector3(-0.5, -0.5),
+      center: new THREE.Vector3(-0.5, 0.5),
       blocks: [
-        new THREE.Vector3(-1, 1),
-        new THREE.Vector3(0, 1),
-        new THREE.Vector3(1, 1),
-        new THREE.Vector3(2, 1),
+        new THREE.Vector3(-1, 0),
+        new THREE.Vector3(0, 0),
+        new THREE.Vector3(1, 0),
+        new THREE.Vector3(2, 0),
       ],
     },
     "O": {
@@ -85,9 +85,21 @@ define([
     this.init(type, options);
   };
 
+  // Shorthand for Tetromino.<type>
   Object.keys(tetromino_data).forEach(function(key) {
     Tetromino[key] = _.partial(Tetromino, key);
   });
+
+  Tetromino.getShuffledPieces = function getShuffledPieces() {
+    var pieces = tetrominos.slice();
+    var shuffled = [];
+    for (var i = pieces.length; i > 0; i--) {
+      var index = (Math.random() * i) | 0;
+      Array.prototype.push.apply(shuffled, pieces.splice(index, 1));
+    }
+    console.log("Shuffled: " + shuffled);
+    return shuffled;
+  };
 
   Tetromino.prototype.init = function init(type, options) {
     if (type === null || type === undefined) {

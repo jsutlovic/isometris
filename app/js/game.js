@@ -63,6 +63,11 @@ define([
       this.view.setCamera();
       this.view.renderModel(this.model);
     }.bind(this));
+
+    Mousetrap.bind(["space"], function() {
+      this.model.freezeActive();
+      this.view.renderModel(this.model);
+    }.bind(this));
   };
 
   Game.prototype.render = function render() {
