@@ -10,7 +10,7 @@ define([
 
   GameView.prototype.init = function init() {
     this.domRendered = false;
-    this.isometric = true;
+    this.isometric = false;
     this.clearColor = 0x000000;
     this.pieceSpacing = new THREE.Vector3(1.1, 1.1, 1.1);
 
@@ -40,7 +40,7 @@ define([
 
     camera.left = -zoom * aspect;
     camera.right = zoom * aspect;
-    camera.bottom = -3;
+    camera.bottom = -3.0;
     camera.top = (zoom * 2) + camera.bottom;
     camera.near = 1;
     camera.far = 1000;
@@ -124,28 +124,33 @@ define([
     this.clearScene(scene);
     this.setupScene(scene, model);
 
-    for (var i=0; i < model.inactive.length; i++) {
-      var piece = model.inactive[i];
-      var pieceMaterial = new THREE.MeshLambertMaterial({color: piece.color});
+    model.inactive.forEach(function(piece) {
+      this.renderTetromino(piece, model);
+    }.bind(this));
 
-      for (var j = 0; j < piece.blocks.length; j++) {
-        var block = piece.blocks[j];
-
-        var vec = model.baseVec.clone();
-        vec.add(piece.vec);
-        vec.add(block);
-        vec.multiply(this.pieceSpacing);
-
-        var cube = new THREE.Mesh(
-          new THREE.BoxGeometry(1, 1, 1),
-          pieceMaterial
-        );
-        cube.position.copy(vec);
-        scene.add(cube);
-      }
-    }
+    this.renderTetromino(model.activePiece, model);
 
     this.render();
+  };
+
+  GameView.prototype.renderTetromino = function renderTetromino(tetromino, model) {
+    var tmMaterial = new THREE.MeshLambertMaterial({color: tetromino.color});
+
+    for (var i = 0; i < tetromino.blocks.length; i++) {
+      var block = tetromino.blocks[i];
+
+      var vec = model.baseVec.clone();
+      vec.add(tetromino.vec);
+      vec.add(block);
+      vec.multiply(this.pieceSpacing);
+
+      var cube = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        tmMaterial
+      );
+      cube.position.copy(vec);
+      this.scene.add(cube);
+    }
   };
 
   GameView.prototype.resize = function resize() {
