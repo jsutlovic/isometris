@@ -18,7 +18,7 @@ define([
     this.level = 0;
     this.events = [];
 
-    var validateBounds = function validateBounds(callback, boundsOpts) {
+    var validateMove = function validateMove(callback, boundsOpts) {
       return function() {
         if (this.model.activePiece === undefined) return false;
         var movable = this.model.validMove(this.model.activePiece, callback);
@@ -28,12 +28,12 @@ define([
       };
     };
     this.eventHandlers = {
-      left: validateBounds(function(p) { p.vec.x -= 1; }, { left: 1 }),
-      right: validateBounds(function(p) { p.vec.x += 1; }, { right: 1 }),
-      down: validateBounds(function(p) { p.vec.y -= 1; }, { down: 1 }),
-      gravity: validateBounds(function(p) { p.vec.y -= 1; }, { down: 1 }),
-      cw: validateBounds(function(p) { p.rotate(1); }, { rotation: 1 }),
-      ccw: validateBounds(function(p) { p.rotate(-1); }, { rotation: -1 }),
+      left: validateMove(function(p) { p.vec.x -= 1; }, { left: 1 }),
+      right: validateMove(function(p) { p.vec.x += 1; }, { right: 1 }),
+      down: validateMove(function(p) { p.vec.y -= 1; }, { down: 1 }),
+      gravity: validateMove(function(p) { p.vec.y -= 1; }, { down: 1 }),
+      cw: validateMove(function(p) { p.rotate(1); }, { rotation: 1 }),
+      ccw: validateMove(function(p) { p.rotate(-1); }, { rotation: -1 }),
     };
 
     Mousetrap.bind("escape", function() {
