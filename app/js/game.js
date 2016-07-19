@@ -14,76 +14,99 @@ define([
   Game.prototype.init = function init() {
     this.view = new GameView();
     this.model = new GameModel();
-    this.animating = true;
+    this.running = true;
+    this.level = 0;
+    this.events = [];
+
+    var validateBounds = function validateBounds(callback, boundsOpts) {
+      return function() {
+        if (this.model.activePiece === undefined) return false;
+        var movable = this.model.validMove(this.model.activePiece, callback);
+        if (!movable) return false;
+        callback.apply(this, [this.model.activePiece]);
+        return true;
+      };
+    };
+    this.eventHandlers = {
+      left: validateBounds(function(p) { p.vec.x -= 1; }, { left: 1 }),
+      right: validateBounds(function(p) { p.vec.x += 1; }, { right: 1 }),
+      down: validateBounds(function(p) { p.vec.y -= 1; }, { down: 1 }),
+      gravity: validateBounds(function(p) { p.vec.y -= 1; }, { down: 1 }),
+      cw: validateBounds(function(p) { p.rotate(1); }, { rotation: 1 }),
+      ccw: validateBounds(function(p) { p.rotate(-1); }, { rotation: -1 }),
+    };
 
     Mousetrap.bind("escape", function() {
-      console.log("stopped animating");
-      this.animating = false;
+      console.log("running: " + this.running);
+      this.running = !this.running;
     }.bind(this));
 
     Mousetrap.bind(["q", "z"], function() {
-      console.log("rotate left");
-      this.model.activePiece.rotate(-1);
-      this.view.renderModel(this.model);
+      console.log("rotate ccw");
+      this.events.push("ccw");
     }.bind(this));
 
     Mousetrap.bind(["e", "x"], function() {
-      console.log("rotate right");
-      this.model.activePiece.rotate(1);
-      this.view.renderModel(this.model);
+      console.log("rotate cw");
+      this.events.push("cw");
     }.bind(this));
 
     Mousetrap.bind(["down", "s"], function() {
       console.log("down");
-      this.model.activePiece.vec.y -= 1;
-      this.view.renderModel(this.model);
-    }.bind(this));
-
-    Mousetrap.bind(["up", "w"], function() {
-      console.log("up");
-      this.model.activePiece.vec.y += 1;
-      this.view.renderModel(this.model);
+      this.events.push("down");
     }.bind(this));
 
     Mousetrap.bind(["left", "a"], function() {
       console.log("left");
-      this.model.activePiece.vec.x -= 1;
-      this.view.renderModel(this.model);
+      this.events.push("left");
     }.bind(this));
 
     Mousetrap.bind(["right", "d"], function() {
       console.log("right");
-      this.model.activePiece.vec.x += 1;
-      this.view.renderModel(this.model);
+      this.events.push("right");
     }.bind(this));
 
     Mousetrap.bind(["i"], function() {
       this.view.isometric = !this.view.isometric;
       console.log("isometric: " + this.view.isometric);
       this.view.setCamera();
-      this.view.renderModel(this.model);
     }.bind(this));
 
     Mousetrap.bind(["space"], function() {
       this.model.freezeActive();
       this.view.renderModel(this.model);
     }.bind(this));
+
+    this.update();
   };
 
   Game.prototype.render = function render() {
-    var view = this.view;
-    var self = this;
-    (function animate() {
-      window.setTimeout(function() {
-        if (!self.animating) return;
-
-        window.requestAnimationFrame(animate);
-        view.render();
-      }, 1000 / 2);
-    })();
-
     this.view.renderInto(document.getElementById('game'));
     this.view.renderModel(this.model);
+  };
+
+  Game.prototype.handleEvents = function handleEvents() {
+    var events = this.events.splice(0, this.events.length);
+
+    var modelDraw = events.map(function(event) {
+      return this.eventHandlers[event];
+    }, this).reduceRight(function(prev, handler) {
+      var current = false;
+      if (handler !== undefined) {
+        current = handler.apply(this);
+      }
+      return prev || current;
+    }.bind(this), false);
+
+    return modelDraw;
+  };
+
+  Game.prototype.update = function update() {
+    window.setTimeout(update.bind(this), 1000 / 30);
+    if (!this.running) return;
+    if (this.handleEvents() === true) this.view.renderModel(this.model);
+
+    window.requestAnimationFrame(this.view.render.bind(this.view));
   };
 
   return Game;

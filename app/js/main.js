@@ -2,7 +2,7 @@
 'use strict'; // jshint globalstrict:true
 
 require.config({
-  urlArgs: new Date().getTime().toString(),
+  // urlArgs: new Date().getTime().toString(),
   shim: {
     underscore: {
       exports: '_'

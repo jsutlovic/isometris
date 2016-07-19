@@ -115,6 +115,7 @@ define([
       rotation: 0,
     });
 
+    this.type = type;
     this.blocks = [];
     this.vec = new THREE.Vector3(opts.x, opts.y, opts.z);
     this.color = opts.color;
@@ -139,7 +140,24 @@ define([
       block.add(this.rotationCenter);
       block.applyAxisAngle(rotVec, angle);
       block.sub(this.rotationCenter);
+      block.round();
     }
+  };
+
+  Tetromino.prototype.clone = function clone() {
+    var newT = new Tetromino(this.type);
+
+    newT.vec = this.vec.clone();
+    newT.color = this.color;
+    newT.rotation = this.rotation;
+    newT.rotationCenter = this.rotationCenter.clone();
+
+    newT.blocks = [];
+    this.blocks.forEach(function(block) {
+      newT.blocks.push(block.clone());
+    });
+
+    return newT;
   };
 
   return Tetromino;

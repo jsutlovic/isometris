@@ -124,9 +124,9 @@ define([
     this.clearScene(scene);
     this.setupScene(scene, model);
 
-    model.inactive.forEach(function(piece) {
+    model.inactivePieces.forEach(function(piece) {
       this.renderTetromino(piece, model);
-    }.bind(this));
+    }, this);
 
     this.renderTetromino(model.activePiece, model);
 
