@@ -17,7 +17,8 @@ define([
     this.inactiveBlocks = [];
     this.baseVec = new THREE.Vector3(-this.width / 2 + 0.5, 1, 0);
     this.tetrominoBag = Tetromino.getShuffledPieces();
-    this.activePiece = this.startPiece(this.nextPiece());
+    this.activePiece = this.start(this.nextType());
+    this.nextPiece = this.upNext(this.tetrominoBag[0]);
 
     var inactive = [
       new Tetromino.S({ x: 3 }),
@@ -32,8 +33,12 @@ define([
     inactive.map(this.freeze.bind(this));
   };
 
-  GameModel.prototype.startPiece = function startPiece(type) {
+  GameModel.prototype.start = function start(type) {
     return new Tetromino(type, { x: this.width/2 - 1, y: this.startHeight });
+  };
+
+  GameModel.prototype.upNext = function upNext(type) {
+    return new Tetromino(type, { x: -4, y: 10 });
   };
 
   GameModel.prototype.freezeBlocks = function freezeBlocks(piece) {
@@ -51,10 +56,11 @@ define([
 
   GameModel.prototype.freezeActive = function freezeActive() {
     this.freeze(this.activePiece);
-    this.activePiece = this.startPiece(this.nextPiece());
+    this.activePiece = this.start(this.nextType());
+    this.nextPiece = this.upNext(this.tetrominoBag[0]);
   };
 
-  GameModel.prototype.nextPiece = function nextPiece() {
+  GameModel.prototype.nextType = function nextType() {
     var next = this.tetrominoBag.shift();
     if (this.tetrominoBag.length === 0) {
       this.tetrominoBag = Tetromino.getShuffledPieces();

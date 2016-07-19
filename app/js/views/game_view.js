@@ -70,23 +70,40 @@ define([
     var unitMat = new THREE.MeshBasicMaterial({
       color: 0xdddddd,
       transparent: true,
-      opacity: 0.125,
+      opacity: 0.065,
+    });
+    var nextMat = new THREE.MeshBasicMaterial({
+      color: 0x88ccff,
+      transparent: true,
+      opacity: 0.1,
     });
 
-    // var vecOffset = new THREE.Vector3(model.width / -2, -0.5);
-    var vecOffset = new THREE.Vector3(0, 0);
-
-    for (var y = 0; y < model.height; y++) {
-      for (var x = 0; x < model.width; x++) {
+    var x, y;
+    for (y = 0; y < model.height; y++) {
+      for (x = 0; x < model.width; x++) {
         var unitMesh = new THREE.Mesh(unitGeom, unitMat);
 
         var vec = model.baseVec.clone();
         vec.add(new THREE.Vector3(x, y));
-        vec.add(vecOffset);
         vec.multiply(this.pieceSpacing);
         unitMesh.position.copy(vec);
 
         scene.add(unitMesh);
+      }
+    }
+
+    var nextBgOffset = new THREE.Vector3(-5, 10);
+    for (y = 0; y < 3; y++) {
+      for (x = 0; x < 4; x++) {
+        var nextMesh = new THREE.Mesh(unitGeom, nextMat);
+
+        var nextVec = model.baseVec.clone();
+        nextVec.add(new THREE.Vector3(x, y));
+        nextVec.add(nextBgOffset);
+        nextVec.multiply(this.pieceSpacing);
+        nextMesh.position.copy(nextVec);
+
+        scene.add(nextMesh);
       }
     }
 
@@ -129,6 +146,7 @@ define([
     }, this);
 
     this.renderTetromino(model.activePiece, model);
+    this.renderTetromino(model.nextPiece, model);
 
     this.render();
   };
