@@ -33,6 +33,10 @@ define([
     inactive.map(this.freeze.bind(this));
   };
 
+  GameModel.prototype.blockIndex = function blockIndex(block) {
+    return (this.width * block.y) + block.x;
+  };
+
   GameModel.prototype.start = function start(type) {
     return new Tetromino(type, { x: this.width/2 - 1, y: this.startHeight });
   };
@@ -51,7 +55,10 @@ define([
 
   GameModel.prototype.freeze = function freeze(piece) {
     this.inactivePieces.push(piece);
-    Array.prototype.push.apply(this.inactiveBlocks, this.freezeBlocks(piece));
+    var frozen = this.freezeBlocks(piece);
+    frozen.forEach(function(block) {
+      this.inactiveBlocks[this.blockIndex(block)] = block;
+    }, this);
   };
 
   GameModel.prototype.freezeActive = function freezeActive() {
@@ -76,9 +83,8 @@ define([
 
   GameModel.prototype.collisions = function collisions(blocks) {
     return blocks.reduce(function(prev, block) {
-      return prev || this.inactiveBlocks.reduce(function(p, inactive) {
-        return p || inactive.equals(block);
-      }, false);
+      var blockIndex = this.blockIndex(block);
+      return prev || this.inactiveBlocks[blockIndex] !== undefined;
     }.bind(this), false);
   };
 
