@@ -13,6 +13,7 @@ define([
     this.isometric = false;
     this.clearColor = 0x000000;
     this.pieceSpacing = new THREE.Vector3(1.1, 1.1, 1.1);
+    this.blockGeom = new THREE.BoxGeometry(1, 1, 1);
 
     window.addEventListener("resize", this.resize.bind(this), false);
 
@@ -66,7 +67,6 @@ define([
 
     scene.add(bottomPlane);
 
-    var unitGeom = new THREE.BoxGeometry(1, 1, 1);
     var unitMat = new THREE.MeshBasicMaterial({
       color: 0xdddddd,
       transparent: true,
@@ -81,7 +81,7 @@ define([
     var x, y;
     for (y = 0; y < model.height; y++) {
       for (x = 0; x < model.width; x++) {
-        var unitMesh = new THREE.Mesh(unitGeom, unitMat);
+        var unitMesh = new THREE.Mesh(this.blockGeom, unitMat);
 
         var vec = model.baseVec.clone();
         vec.add(new THREE.Vector3(x, y));
@@ -95,7 +95,7 @@ define([
     var nextBgOffset = new THREE.Vector3(-5, 10);
     for (y = 0; y < 3; y++) {
       for (x = 0; x < 4; x++) {
-        var nextMesh = new THREE.Mesh(unitGeom, nextMat);
+        var nextMesh = new THREE.Mesh(this.blockGeom, nextMat);
 
         var nextVec = model.baseVec.clone();
         nextVec.add(new THREE.Vector3(x, y));
@@ -162,10 +162,7 @@ define([
       vec.add(block);
       vec.multiply(this.pieceSpacing);
 
-      var cube = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        tmMaterial
-      );
+      var cube = new THREE.Mesh(this.blockGeom, tmMaterial);
       cube.position.copy(vec);
       this.scene.add(cube);
     }
