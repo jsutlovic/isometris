@@ -20,6 +20,9 @@ define([
     this.activePiece = this.start(this.nextType());
     this.nextPiece = this.upNext(this.tetrominoBag[0]);
 
+    for (var y = 0; y < this.height; y++) {
+      this.inactiveBlocks[y] = [];
+    }
     var inactive = [
       new Tetromino.S({ x: 3 }),
       new Tetromino.T({ x: 5 }),
@@ -31,10 +34,6 @@ define([
       new Tetromino.I({ x: 1, y: 2, rotation: 3}),
     ];
     inactive.map(this.freeze.bind(this));
-  };
-
-  GameModel.prototype.blockIndex = function blockIndex(block) {
-    return (this.width * block.y) + block.x;
   };
 
   GameModel.prototype.start = function start(type) {
@@ -53,12 +52,42 @@ define([
     });
   };
 
+  GameModel.prototype.checkRows = function checkRows() {
+    var rowCounts = this.inactiveBlocks.map(function(row) {
+      return row.reduce(function(prev, curr) {
+        return prev + ((curr && 1) || 0);
+      }, 0);
+    });
+
+    var fullRowIndexes = [];
+    for (var y = 0, idx = 0; y < this.height; y++) {
+      var rowCount = rowCounts[y];
+      if (rowCount === 0) break;
+      for (var x = 0; x < this.width; x++) {
+        var block = this.inactiveBlocks[idx][x];
+        if (block !== undefined) {
+          block.y = idx;
+        }
+      }
+      if (rowCount === 10) {
+        this.inactiveBlocks.splice(idx, idx+1);
+        this.inactiveBlocks.push([]);
+      } else {
+        idx++;
+      }
+    }
+    console.log("Deleted " + (y-idx) + " rows.");
+
+    return rowCounts;
+  };
+
   GameModel.prototype.freeze = function freeze(piece) {
     this.inactivePieces.push(piece);
     var frozen = this.freezeBlocks(piece);
     frozen.forEach(function(block) {
-      this.inactiveBlocks[this.blockIndex(block)] = block;
+      this.inactiveBlocks[block.y][block.x] = block;
     }, this);
+    console.log(this.checkRows());
   };
 
   GameModel.prototype.freezeActive = function freezeActive() {
@@ -83,8 +112,7 @@ define([
 
   GameModel.prototype.collisions = function collisions(blocks) {
     return blocks.reduce(function(prev, block) {
-      var blockIndex = this.blockIndex(block);
-      return prev || this.inactiveBlocks[blockIndex] !== undefined;
+      return prev || this.inactiveBlocks[block.y][block.x] !== undefined;
     }.bind(this), false);
   };
 

@@ -141,9 +141,22 @@ define([
     this.clearScene(scene);
     this.setupScene(scene, model);
 
-    model.inactivePieces.forEach(function(piece) {
-      this.renderTetromino(piece, model);
+    var blockMat = new THREE.MeshLambertMaterial({color: 0x888888});
+    model.inactiveBlocks.forEach(function(blockRow) {
+      blockRow.forEach(function(block) {
+        var vec = model.baseVec.clone();
+        vec.add(block);
+        vec.multiply(this.pieceSpacing);
+
+        var cube = new THREE.Mesh(this.blockGeom, blockMat);
+        cube.position.copy(vec);
+        this.scene.add(cube);
+      }, this);
     }, this);
+
+    // model.inactivePieces.forEach(function(piece) {
+    //   this.renderTetromino(piece, model);
+    // }, this);
 
     this.renderTetromino(model.activePiece, model);
     this.renderTetromino(model.nextPiece, model);
