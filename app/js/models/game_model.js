@@ -60,23 +60,23 @@ define([
     });
 
     var fullRowIndexes = [];
-    for (var y = 0, idx = 0; y < this.height; y++) {
+    for (var y = 0, shifted = 0; y < this.height; y++) {
       var rowCount = rowCounts[y];
       if (rowCount === 0) break;
       for (var x = 0; x < this.width; x++) {
-        var block = this.inactiveBlocks[idx][x];
+        var block = this.inactiveBlocks[shifted][x];
         if (block !== undefined) {
-          block.y = idx;
+          block.y = shifted;
         }
       }
       if (rowCount === 10) {
-        this.inactiveBlocks.splice(idx, idx+1);
+        this.inactiveBlocks.splice(shifted, 1);
         this.inactiveBlocks.push([]);
       } else {
-        idx++;
+        shifted++;
       }
     }
-    console.log("Deleted " + (y-idx) + " rows.");
+    console.log("Deleted " + (y-shifted) + " rows.");
 
     return rowCounts;
   };
