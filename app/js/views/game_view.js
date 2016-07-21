@@ -141,11 +141,20 @@ define([
     this.clearScene(scene);
     this.setupScene(scene, model);
 
-    var blockMat = new THREE.MeshLambertMaterial({color: 0x888888});
+    this.renderInactive(model);
+
+    this.renderTetromino(model.activePiece, model);
+    this.renderTetromino(model.nextPiece, model);
+
+    this.render();
+  };
+
+  GameView.prototype.renderInactive = function renderInactive(model) {
     model.inactiveBlocks.forEach(function(blockRow) {
       blockRow.forEach(function(block) {
+        var blockMat = new THREE.MeshLambertMaterial({ color: block.color });
         var vec = model.baseVec.clone();
-        vec.add(block);
+        vec.add(block.vec);
         vec.multiply(this.pieceSpacing);
 
         var cube = new THREE.Mesh(this.blockGeom, blockMat);
@@ -154,14 +163,6 @@ define([
       }, this);
     }, this);
 
-    // model.inactivePieces.forEach(function(piece) {
-    //   this.renderTetromino(piece, model);
-    // }, this);
-
-    this.renderTetromino(model.activePiece, model);
-    this.renderTetromino(model.nextPiece, model);
-
-    this.render();
   };
 
   GameView.prototype.renderTetromino = function renderTetromino(tetromino, model) {
@@ -172,7 +173,7 @@ define([
 
       var vec = model.baseVec.clone();
       vec.add(tetromino.vec);
-      vec.add(block);
+      vec.add(block.vec);
       vec.multiply(this.pieceSpacing);
 
       var cube = new THREE.Mesh(this.blockGeom, tmMaterial);

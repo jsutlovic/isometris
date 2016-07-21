@@ -124,7 +124,7 @@ define([
     this.color = tetromino_data[type].color;
     this.rotationCenter = tetromino_data[type].center.clone();
     tetromino_data[type].blocks.forEach(function(block) {
-      this.blocks.push(block.clone());
+      this.blocks.push(new Tetromino.Block(block.clone(), this.color));
     }.bind(this));
 
     this.rotate(this.rotation);
@@ -137,10 +137,10 @@ define([
       var block = this.blocks[i];
       var angle = - (Math.PI / 2) * direction;
 
-      block.add(this.rotationCenter);
-      block.applyAxisAngle(rotVec, angle);
-      block.sub(this.rotationCenter);
-      block.round();
+      block.vec.add(this.rotationCenter);
+      block.vec.applyAxisAngle(rotVec, angle);
+      block.vec.sub(this.rotationCenter);
+      block.vec.round();
     }
   };
 
@@ -160,6 +160,18 @@ define([
     return newT;
   };
 
+  Tetromino.Block = function Block(vec, color) {
+    this.init(vec, color);
+  };
+
+  Tetromino.Block.prototype.init = function init(vec, color) {
+    this.vec = vec;
+    this.color = color;
+  };
+
+  Tetromino.Block.prototype.clone = function clone() {
+    return new Tetromino.Block(this.vec.clone(), this.color);
+  };
+
   return Tetromino;
 });
-

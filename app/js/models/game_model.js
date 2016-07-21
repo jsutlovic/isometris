@@ -13,7 +13,6 @@ define([
     this.width = 10;
     this.height = 25;
     this.startHeight = 21;
-    this.inactivePieces = [];
     this.inactiveBlocks = [];
     this.baseVec = new THREE.Vector3(-this.width / 2 + 0.5, 1, 0);
     this.tetrominoBag = Tetromino.getShuffledPieces();
@@ -47,7 +46,7 @@ define([
   GameModel.prototype.freezeBlocks = function freezeBlocks(piece) {
     return piece.blocks.map(function(block) {
       var frozen = block.clone();
-      frozen.add(piece.vec);
+      frozen.vec.add(piece.vec);
       return frozen;
     });
   };
@@ -66,7 +65,7 @@ define([
       for (var x = 0; x < this.width; x++) {
         var block = this.inactiveBlocks[shifted][x];
         if (block !== undefined) {
-          block.y = shifted;
+          block.vec.y = shifted;
         }
       }
       if (rowCount === 10) {
@@ -82,10 +81,9 @@ define([
   };
 
   GameModel.prototype.freeze = function freeze(piece) {
-    this.inactivePieces.push(piece);
     var frozen = this.freezeBlocks(piece);
     frozen.forEach(function(block) {
-      this.inactiveBlocks[block.y][block.x] = block;
+      this.inactiveBlocks[block.vec.y][block.vec.x] = block;
     }, this);
     console.log(this.checkRows());
   };
@@ -106,13 +104,14 @@ define([
 
   GameModel.prototype.outOfBounds = function outOfBounds(blocks) {
     return blocks.reduce(function(prev, block) {
-      return prev || block.x < 0 || block.y < 0 || block.x >= this.width;
+      var vec = block.vec;
+      return prev || vec.x < 0 || vec.y < 0 || vec.x >= this.width;
     }.bind(this), false);
   };
 
   GameModel.prototype.collisions = function collisions(blocks) {
     return blocks.reduce(function(prev, block) {
-      return prev || this.inactiveBlocks[block.y][block.x] !== undefined;
+      return prev || this.inactiveBlocks[block.vec.y][block.vec.x] !== undefined;
     }.bind(this), false);
   };
 
