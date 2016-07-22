@@ -16,6 +16,7 @@ define([
     this.model = new GameModel();
     this.running = true;
     this.level = 0;
+    this.tick = false;
     this.events = [];
 
     var validateMove = function validateMove(callback) {
@@ -77,12 +78,8 @@ define([
       this.view.setCamera();
     }.bind(this));
 
-    Mousetrap.bind(["space"], function() {
-      this.model.freezeActive();
-      this.view.renderModel(this.model);
-    }.bind(this));
-
     this.update();
+    this.doTick();
   };
 
   Game.prototype.render = function render() {
@@ -106,9 +103,23 @@ define([
     return modelDraw;
   };
 
+  Game.prototype.doTick = function doTick() {
+    this.tick = true;
+    window.setTimeout(doTick.bind(this), 512 >> this.level);
+  };
+
   Game.prototype.update = function update() {
     window.setTimeout(update.bind(this), 1000 / 30);
     if (!this.running) return;
+
+    if (this.tick) {
+      this.tick = false;
+
+      if (!this.eventHandlers.down.apply(this)) {
+        this.model.freezeActive();
+      }
+      this.view.renderModel(this.model);
+    }
     if (this.handleEvents() === true) this.view.renderModel(this.model);
 
     window.requestAnimationFrame(this.view.render.bind(this.view));
