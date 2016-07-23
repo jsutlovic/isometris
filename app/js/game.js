@@ -18,6 +18,7 @@ define([
     this.level = 0;
     this.tick = false;
     this.events = [];
+    this.timeouts = {};
 
     var validateMove = function validateMove(callback) {
       return function() {
@@ -54,7 +55,7 @@ define([
 
     Mousetrap.bind(["up", "w"], function() {
       return false;
-    });
+    }.bind(this));
 
     Mousetrap.bind(["down", "s"], function() {
       console.log("down");
@@ -105,18 +106,28 @@ define([
 
   Game.prototype.doTick = function doTick() {
     this.tick = true;
-    window.setTimeout(doTick.bind(this), 512 >> this.level);
+    var newTick = 512 >> this.level;
+    this.timeouts.doTick = window.setTimeout(doTick.bind(this), newTick);
   };
 
   Game.prototype.update = function update() {
-    window.setTimeout(update.bind(this), 1000 / 30);
+    this.timeouts.update = window.setTimeout(update.bind(this), 1000 / 30);
     if (!this.running) return;
 
     if (this.tick) {
       this.tick = false;
 
       if (!this.eventHandlers.down.apply(this)) {
-        this.model.freezeActive();
+        if (this.model.activePiece.vec.y == this.model.startHeight) {
+          // Lose condition
+          console.log("Lose condition detected!");
+
+          // STOP ALL TIMEOUTS
+          window.clearTimeout(this.timeouts.doTick);
+          window.clearTimeout(this.timeouts.update);
+        } else {
+          this.model.freezeActive();
+        }
       }
       this.view.renderModel(this.model);
     }
